@@ -42,105 +42,112 @@ client.on('messageCreate', (message) => {
 
     // checking for ! command indicator
     if(message.content[0] == "!") {
-        const command = message.content.slice(1);
+        try {
+            const command = message.content.slice(1);
 
-        // list snipers command
-        if(command == "listsnipers") {
-            guild.members.fetch();
-            const snipers = sniper.members.map(member => member.user.displayName);
-            message.reply(`## **Members with Sniper Role**:\n\n${snipers.join('\n')}`);
-        }
-        // update snipers command
-        if(command == "updatesnipers") {
-            guild.members.fetch();
-            const snipers = sniper.members.map(member => member.user);
-            for(let i = 0; i < snipers.length; i++) {
-                if(!(snipers[i].id in jsonStats)) {
-                    jsonStats[snipers[i].id] = {};
-                    jsonStats[snipers[i].id]["name"] = snipers[i].displayName;
-                    jsonStats[snipers[i].id]["snipe count"] = 0;
-                    jsonStats[snipers[i].id]["death count"] = 0;
-                    jsonStats[snipers[i].id]["emojis"] = "";
+            // list snipers command
+            if(command == "listsnipers") {
+                guild.members.fetch();
+                const snipers = sniper.members.map(member => member.user.displayName);
+                message.reply(`## **Members with Sniper Role**:\n\n${snipers.join('\n')}`);
+            }
+            // update snipers command
+            if(command == "updatesnipers") {
+                guild.members.fetch();
+                const snipers = sniper.members.map(member => member.user);
+                for(let i = 0; i < snipers.length; i++) {
+                    if(!(snipers[i].id in jsonStats)) {
+                        jsonStats[snipers[i].id] = {};
+                        jsonStats[snipers[i].id]["name"] = snipers[i].displayName;
+                        jsonStats[snipers[i].id]["snipe count"] = 0;
+                        jsonStats[snipers[i].id]["death count"] = 0;
+                        jsonStats[snipers[i].id]["emojis"] = "";
+                    }
                 }
+                const updatedJsonStats = JSON.stringify(jsonStats, null, 2);
+                fs.writeFileSync(filePath, updatedJsonStats, 'utf8');
+                message.reply("**Snipers updated**")
             }
-            const updatedJsonStats = JSON.stringify(jsonStats, null, 2);
-            fs.writeFileSync(filePath, updatedJsonStats, 'utf8');
-            message.reply("**Snipers updated**")
-        }
 
-        mentioned.forEach(member => {
-            mentioned_members.push(member);
-          });
-        // display own stats
-        if(command == "stats") {
-            const memberid = member.user.id;
-            const snipeCount = jsonStats[memberid]["snipe count"];
-            const deathCount = jsonStats[memberid]["death count"];
-            const emojis = jsonStats[memberid]["emojis"];
-            message.reply(`## **Player Stats**\n\n**${member.displayName}** has **${snipeCount} snipes** and **${deathCount} deaths**\n\n${emojis}`);
-        }
-        // display other stats
-        else if (command.includes("stats") && mentioned.size == 1 && mentioned_members[0].roles.cache.has(sniperRoleID)) {
-            console.log("hi")
-            const memberid = mentioned_members[0].user.id;
-            const snipeCount = jsonStats[memberid]["snipe count"];
-            const deathCount = jsonStats[memberid]["death count"];
-            const emojis = jsonStats[memberid]["emojis"];
-            message.reply(`## **Player Stats**\n\n**${mentioned_members[0].displayName}** has **${snipeCount} snipes** and **${deathCount} deaths**\n\n${emojis}`);
-        }
-
-        // display leaderboard
-        if(command == "leaderboard") {
-            const snipeCounts = [];
-            const deathCounts = [];
-            const snipeBoard = {};
-            const deathBoard = {};
-            const snipeBoardData = [];
-            const deathBoardData = [];
-            const keys = Object.keys(jsonStats);
-            console.log(keys.length);
-            for(let i = 0; i < keys.length; i++) {
-                const key = keys[i];
-                snipeCounts.push(jsonStats[key]["snipe count"]);
-                deathCounts.push(jsonStats[key]["death count"]);
+            mentioned.forEach(member => {
+                mentioned_members.push(member);
+            });
+            // display own stats
+            if(command == "stats" && member.roles.cache.has(sniperRoleID)) {
+                const memberid = member.user.id;
+                const snipeCount = jsonStats[memberid]["snipe count"];
+                const deathCount = jsonStats[memberid]["death count"];
+                const emojis = jsonStats[memberid]["emojis"];
+                message.reply(`## **Player Stats**\n\n**${member.displayName}** has **${snipeCount} snipes** and **${deathCount} deaths**\n\n${emojis}`);
             }
-            snipeCounts.sort();
-            snipeCounts.reverse();
-            deathCounts.sort();
-            deathCounts.reverse();
-            snipeCounts.forEach(function(value, index) {
+            // display other stats
+            else if (command.includes("stats") && mentioned.size == 1 && mentioned_members[0].roles.cache.has(sniperRoleID)) {
+                console.log("hi")
+                const memberid = mentioned_members[0].user.id;
+                const snipeCount = jsonStats[memberid]["snipe count"];
+                const deathCount = jsonStats[memberid]["death count"];
+                const emojis = jsonStats[memberid]["emojis"];
+                message.reply(`## **Player Stats**\n\n**${mentioned_members[0].displayName}** has **${snipeCount} snipes** and **${deathCount} deaths**\n\n${emojis}`);
+            }
+
+            // display leaderboard
+            if(command == "leaderboard") {
+                const snipeCounts = [];
+                const deathCounts = [];
+                const snipeBoard = {};
+                const deathBoard = {};
+                const snipeBoardData = [];
+                const deathBoardData = [];
+                const keys = Object.keys(jsonStats);
+                console.log(keys.length);
                 for(let i = 0; i < keys.length; i++) {
                     const key = keys[i];
-                    if(jsonStats[key]["snipe count"] == value) {
-                        snipeBoard[index] = jsonStats[key]["name"];
-                    }
+                    snipeCounts.push(jsonStats[key]["snipe count"]);
+                    deathCounts.push(jsonStats[key]["death count"]);
                 }
-            });
-            deathCounts.forEach(function(value, index) {
+                snipeCounts.sort();
+                snipeCounts.reverse();
+                deathCounts.sort();
+                deathCounts.reverse();
+                snipeCounts.forEach(function(value, index) {
+                    for(let i = 0; i < keys.length; i++) {
+                        const key = keys[i];
+                        if(jsonStats[key]["snipe count"] == value && !(Object.values(snipeBoard).includes(jsonStats[key]["name"]))) {
+                            snipeBoard[index] = jsonStats[key]["name"];
+                        }
+                    }
+                });
+                deathCounts.forEach(function(value, index) {
+                    for(let i = 0; i < keys.length; i++) {
+                        const key = keys[i]
+                        if(jsonStats[key]["death count"] == value && !(Object.values(deathBoard).includes(jsonStats[key]["name"]))) {
+                            deathBoard[index] = jsonStats[key]["name"];
+                            console.log("did");
+                        }
+                    }
+                });
+                console.log(snipeBoard);
+                console.log(deathBoard);
+                snipeOrder = Object.values(snipeBoard);
+                deathOrder = Object.values(deathBoard);
                 for(let i = 0; i < keys.length; i++) {
-                    const key = keys[i]
-                    if(jsonStats[key]["death count"] == value) {
-                        deathBoard[index] = jsonStats[key]["name"];
-                    }
+                    snipeBoardData.push({name: snipeOrder[i], points: snipeCounts[i]});
                 }
-            });
-            console.log(snipeBoard);
-            snipeOrder = Object.values(snipeBoard);
-            deathOrder = Object.values(deathBoard);
-            for(let i = 0; i < keys.length; i++) {
-                snipeBoardData.push({name: snipeOrder[i], points: snipeCounts[i]});
+                for(let i = 0; i < keys.length; i++) {
+                    deathBoardData.push({name: deathOrder[i], points: deathCounts[i]});
+                }
+                const snipeLeaderboardData = snipeBoardData
+                    .map((entry, index) => `${index + 1}. **${entry.name}** – ${entry.points} pts`)
+                    .join('\n');
+                const deathLeaderboardData = deathBoardData
+                    .map((entry, index) => `${index + 1}. **${entry.name}** – ${entry.points} pts`)
+                    .join('\n');
+                message.reply(`## 🏆 **Snipe Leaderboard** 🏆\n\n${snipeLeaderboardData}\n\n## 💀 **Death Leaderboard** 💀\n\n${deathLeaderboardData}`);
             }
-            for(let i = 0; i < keys.length; i++) {
-                deathBoardData.push({name: deathOrder[i], points: deathCounts[i]});
-            }
-            const snipeLeaderboardData = snipeBoardData
-                .map((entry, index) => `${index + 1}. **${entry.name}** – ${entry.points} pts`)
-                .join('\n');
-            const deathLeaderboardData = deathBoardData
-                .map((entry, index) => `${index + 1}. **${entry.name}** – ${entry.points} pts`)
-                .join('\n');
-            message.reply(`## 🏆 **Snipe Leaderboard** 🏆\n\n${snipeLeaderboardData}\n\n## 💀 **Death Leaderboard** 💀\n\n${deathLeaderboardData}`);
+        } catch (error) {
+            console.error("Error executing commands:", error);
         }
+        return;
     }
     
     let validSnipe = true;
@@ -149,11 +156,16 @@ client.on('messageCreate', (message) => {
     // checking if sender has sniper role and message contains mentions
     if(!member.roles.cache.has(sniperRoleID) || !(mentioned.size > 0)) {
         validSnipe = false;
+        // sending error message if message has image but no mentions
+        if(member.roles.cache.has(sniperRoleID) && message.attachments.size > 0) {
+            message.reply("You must mention the person you're sniping in the same message!");
+        }
     }
 
     // checking if message has an image
     if (message.attachments.size == 0) {
         validSnipe = false;
+        return;
     }
     else {
         // storing mentioned users in an array and checking if all are snipers
@@ -163,12 +175,7 @@ client.on('messageCreate', (message) => {
                 message.reply("Invalid snipe, no sniping non-snipers!");
                 validSnipe = false;
             }
-          });
-    }
-
-    // sending error message if message has image but no mentions
-    if(member.roles.cache.has(sniperRoleID) && message.attachments.size > 0 && mentioned.size == 0) {
-        message.reply("You must mention the person you're sniping in the same message!");
+        });
     }
     
     if(validSnipe) {
