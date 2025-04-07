@@ -1,7 +1,8 @@
 const fs = require('fs');
 
-const { Client, IntentsBitField } = require('discord.js');
+const { Client, IntentsBitField, Partials } = require('discord.js');
 const sniperRoleID = '1358177429297828012';
+const snipermodRoleID = '1358940406854713376';
 
 // loading stats and token data from json files
 filePath = 'src/stats.json'
@@ -21,6 +22,7 @@ const client = new Client({
         IntentsBitField.Flags.GuildMessageReactions,
         IntentsBitField.Flags.GuildPresences
     ],
+    partials: [Partials.Message, Partials.Channel, Partials.Reaction, Partials.User],
 });
 
 
@@ -36,8 +38,14 @@ client.on('messageCreate', (message) => {
     const mentioned = message.mentions.members;
     const mentioned_members = [];
 
-     if (message.channel.name != "sniped") {
+    // checks if message is in snipe channel
+    if (message.channel.name != "sniped") {
           return;
+    }
+
+    // adds flag reaction to snipe messages
+    if (message.author.bot && message.content.includes("just sniped")) {
+        message.react("🏴");
     }
 
     // checking for ! command indicator
@@ -99,7 +107,6 @@ client.on('messageCreate', (message) => {
                 const snipeBoardData = [];
                 const deathBoardData = [];
                 const keys = Object.keys(jsonStats);
-                console.log(keys.length);
                 for(let i = 0; i < keys.length; i++) {
                     const key = keys[i];
                     snipeCounts.push(jsonStats[key]["snipe count"]);
@@ -122,12 +129,9 @@ client.on('messageCreate', (message) => {
                         const key = keys[i]
                         if(jsonStats[key]["death count"] == value && !(Object.values(deathBoard).includes(jsonStats[key]["name"]))) {
                             deathBoard[index] = jsonStats[key]["name"];
-                            console.log("did");
                         }
                     }
                 });
-                console.log(snipeBoard);
-                console.log(deathBoard);
                 snipeOrder = Object.values(snipeBoard);
                 deathOrder = Object.values(deathBoard);
                 for(let i = 0; i < keys.length; i++) {
@@ -207,5 +211,52 @@ client.on('messageCreate', (message) => {
         }
     }
 })
+
+client.on('messageReactionAdd', async (reaction, user) => {
+    // Ensure it's cached
+    if (reaction.partial) {
+      try {
+        await reaction.fetch();
+      } catch (error) {
+        console.error('❌ Error fetching reaction:', error);
+        return;
+      }
+    }
+
+    // checking if the message reacted to is correct
+    if(!(reaction.message.author.bot && reaction.message.content.includes("just sniped")))
+        return;
+
+    const guild = reaction.message.guild;
+
+    // Fetch the member from the guild
+    const member = await guild.members.fetch(user.id);
+
+    // checking if user has the high snipress role and used correct reaction
+    if(!(reaction.emoji.name === '🏴')  || !(member.roles.cache.has(snipermodRoleID))) {
+        reaction.users.remove(user.id);
+        return;
+    }
+
+    // getting people mentioned as well as sender of message
+    const repliedMessage = await reaction.message.channel.messages.fetch(reaction.message.reference.messageId);
+    console.log(repliedMessage.mentions);
+    const sender = repliedMessage.author;
+    const mentioned = repliedMessage.mentions.members;
+
+    // fixing stats
+    mentioned.forEach(member => {
+        jsonStats[member.id]["death count"] -= 1;
+        jsonStats[member.id]["emojis"] += "😇";
+      });
+    jsonStats[sender.id]["snipe count"] -= 1;
+    jsonStats[member.id]["emojis"] += "🏴";
+    const updatedJsonStats = JSON.stringify(jsonStats, null, 2);
+    fs.writeFileSync(filePath, updatedJsonStats, 'utf8');
+
+    // replying with illegal notification
+    repliedMessage.reply("🚩 Snipe flagged as illegal! All decisions are final! 🚩");
+    reaction.message.delete();
+});
 
 client.login(TOKEN);
