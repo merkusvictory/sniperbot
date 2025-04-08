@@ -94,7 +94,9 @@ client.on('messageCreate', (message) => {
                 const snipeCount = jsonStats[memberid]["snipe count"];
                 const deathCount = jsonStats[memberid]["death count"];
                 const emojis = jsonStats[memberid]["emojis"];
-                message.reply(`## **Player Stats**\n\n**${mentioned_members[0].displayName}** has **${snipeCount} snipes** and **${deathCount} deaths**\n\n${emojis}`);
+                let denom = jsonStats[memberid]["death count"];
+                if(denom == 0) {denom = 1;}
+                message.reply(`## **Player Stats**\n\n**${mentioned_members[0].displayName}** has **${snipeCount} snipes** and **${deathCount} deaths**, **KDR (${snipeCount/denom})**\n\n${emojis}`);
             }
 
             // display leaderboard
@@ -242,14 +244,22 @@ client.on('messageReactionAdd', async (reaction, user) => {
     console.log(repliedMessage.mentions);
     const sender = repliedMessage.author;
     const mentioned = repliedMessage.mentions.members;
+    const mentioned_members = [];
+    mentioned.forEach(member => {
+        mentioned_members.push(member.displayName);
+        if(!member.roles.cache.has(sniperRoleID)) {
+            message.reply("Invalid snipe, no sniping non-snipers!");
+            validSnipe = false;
+        }
+    });
 
     // fixing stats
     mentioned.forEach(member => {
         jsonStats[member.id]["death count"] -= 1;
         jsonStats[member.id]["emojis"] += "😇";
       });
-    jsonStats[sender.id]["snipe count"] -= mentioned.length;
-    jsonStats[sender.id]["emojis"] += "🏴" * mentioned.length;
+    jsonStats[sender.id]["snipe count"] -= mentioned_members.length;
+    jsonStats[sender.id]["emojis"] += "🏴".repeat(mentioned_members.length);
     const updatedJsonStats = JSON.stringify(jsonStats, null, 2);
     fs.writeFileSync(filePath, updatedJsonStats, 'utf8');
 
