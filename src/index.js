@@ -90,7 +90,6 @@ client.on('messageCreate', (message) => {
             }
             // display other stats
             else if (command.includes("stats") && mentioned.size == 1 && mentioned_members[0].roles.cache.has(sniperRoleID)) {
-                console.log("hi")
                 const memberid = mentioned_members[0].user.id;
                 const snipeCount = jsonStats[memberid]["snipe count"];
                 const deathCount = jsonStats[memberid]["death count"];
@@ -197,8 +196,8 @@ client.on('messageCreate', (message) => {
 
         // updating new sniping stats
         try {
-            jsonStats[member.id]["snipe count"] += 1;
-            jsonStats[member.id]["emojis"] += "🏆";
+            jsonStats[member.id]["snipe count"] += mentioned_members.length;
+            jsonStats[member.id]["emojis"] += "🏆" * mentioned_members.length;
             mentioned.forEach(member => {
                 jsonStats[member.id]["death count"] += 1;
                 jsonStats[member.id]["emojis"] += "💀";
@@ -249,8 +248,8 @@ client.on('messageReactionAdd', async (reaction, user) => {
         jsonStats[member.id]["death count"] -= 1;
         jsonStats[member.id]["emojis"] += "😇";
       });
-    jsonStats[sender.id]["snipe count"] -= 1;
-    jsonStats[member.id]["emojis"] += "🏴";
+    jsonStats[sender.id]["snipe count"] -= mentioned.length;
+    jsonStats[sender.id]["emojis"] += "🏴" * mentioned.length;
     const updatedJsonStats = JSON.stringify(jsonStats, null, 2);
     fs.writeFileSync(filePath, updatedJsonStats, 'utf8');
 
