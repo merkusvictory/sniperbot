@@ -6,3 +6,4 @@ Discord Bot for Snipe Messages
 !stats - view own stats  
 !stats @mention - view other sniper's stats  
 !leaderboard - lists snipers with most kills and deaths  
+!kdrleaderboard - lists snipers with highest kill-death ratio  
