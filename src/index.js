@@ -146,7 +146,7 @@ client.on('messageCreate', (message) => {
                     const emojis = jsonStats[memberid]["emojis"];
                     let denom = jsonStats[memberid]["death count"];
                     if(denom == 0) {denom = 1;}
-                    message.reply(`## **Player Stats**\n\n**${mentioned_members[0].displayName}** has **${snipeCount} snipes** and **${deathCount} deaths**, **KDR (${snipeCount/denom})**\n\n${emojis}`);
+                    message.reply(`## **Player Stats**\n\n**${member.displayName}** has **${snipeCount} snipes** and **${deathCount} deaths**, **KDR (${snipeCount/denom})**\n\n${emojis}`);
                 }
                 // display other stats
                 else if (command.includes("stats") && mentioned.size == 1 && mentioned_members[0].roles.cache.has(sniperRoleID)) {
