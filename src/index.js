@@ -236,7 +236,7 @@ client.on('messageCreate', (message) => {
                     if(command == "leaderboard")
                         message.reply(`## 🏆 **Snipe Leaderboard** 🏆\n\n${snipeLeaderboardData}\n\n## 💀 **Death Leaderboard** 💀\n\n${deathLeaderboardData}`);
                     if(command == "kdrleaderboard")
-                        message.reply(`##🔥  **KDR Leaderboard** 🔥##\n\n${kdrLeaderboardData}`);
+                        message.reply(`## 🔥  **KDR Leaderboard** 🔥\n\n${kdrLeaderboardData}`);
                 }
             } catch (error) {
                 console.error("Error executing commands:", error);
