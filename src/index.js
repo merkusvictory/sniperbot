@@ -176,7 +176,7 @@ client.on('messageCreate', (message) => {
                         const key = keys[i];
                         snipeCounts.push(jsonStats[key]["snipe count"]);
                         deathCounts.push(jsonStats[key]["death count"]);
-                        denom = jsonStats[memberid]["death count"];
+                        denom = jsonStats[key]["death count"];
                         if(denom == 0) {denom = 1;}
                         kdrCounts.push(jsonStats[key]["snipe count"]/denom)
                     }
