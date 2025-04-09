@@ -230,7 +230,7 @@ client.on('messageCreate', (message) => {
                     const deathLeaderboardData = deathBoardData
                         .map((entry, index) => `${index + 1}. **${entry.name}** – ${entry.points} pts`)
                         .join('\n');
-                    const kdrLeaderboardData = kdrLeaderboardData
+                    const kdrLeaderboardData = kdrBoardData
                         .map((entry, index) => `${index + 1}. **${entry.name}** – ${entry.points}`)
                         .join('\n');
                     if(command == "leaderboard")
