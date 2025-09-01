@@ -1,8 +1,8 @@
 const fs = require('fs');
 
 const { Client, IntentsBitField, Partials } = require('discord.js');
-const sniperRoleID = '1316110453935575101';
-const snipermodRoleID = '1349181053973041185';
+const sniperRoleID = '1358177429297828012';
+const snipermodRoleID = '1358940406854713376';
 
 // loading stats and token data from json files
 filePath = 'src/stats.json'
