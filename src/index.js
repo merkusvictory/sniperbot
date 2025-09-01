@@ -5,10 +5,11 @@ const sniperRoleID = '1358177429297828012';
 const snipermodRoleID = '1358940406854713376';
 
 // loading stats and token data from json files
-filePath = 'src/stats.json'
-const statsFile = fs.readFileSync(filePath, 'utf8');
+const statsFile = fs.readFileSync('src/stats.json', 'utf8');
+const stats2File = fs.readFileSync('src/stats2.json', 'utf8')
 const tokenFile = fs.readFileSync('src/token.json', 'utf8');
 const jsonStats = JSON.parse(statsFile);
+const jsonStats2 = JSON.parse(stats2File)
 const jsonToken = JSON.parse(tokenFile);
 const TOKEN = jsonToken["token"];
 const CLIENTID = jsonToken["clientId"];
@@ -89,13 +90,13 @@ client.on('messageCreate', (message) => {
 
             // updating new sniping stats
             try {
-                jsonStats[member.id]["snipe count"] += mentioned_members.length;
-                jsonStats[member.id]["emojis"] += "🏆".repeat(mentioned_members.length);
+                jsonStats2[member.id]["snipe count"] += mentioned_members.length;
+                jsonStats2[member.id]["emojis"] += "🏆".repeat(mentioned_members.length);
                 mentioned.forEach(member => {
-                    jsonStats[member.id]["death count"] += 1;
-                    jsonStats[member.id]["emojis"] += "💀";
+                    jsonStats2[member.id]["death count"] += 1;
+                    jsonStats2[member.id]["emojis"] += "💀";
                 });
-                const updatedJsonStats = JSON.stringify(jsonStats, null, 2);
+                const updatedJsonStats = JSON.stringify(jsonStats2, null, 2);
                 fs.writeFileSync(filePath, updatedJsonStats, 'utf8');
             }
             catch (error) {
@@ -122,16 +123,16 @@ client.on('messageCreate', (message) => {
                     guild.members.fetch();
                     const snipers = sniper.members.map(member => member.user);
                     for(let i = 0; i < snipers.length; i++) {
-                        if(!(snipers[i].id in jsonStats)) {
-                            jsonStats[snipers[i].id] = {};
-                            jsonStats[snipers[i].id]["name"] = snipers[i].displayName;
-                            jsonStats[snipers[i].id]["snipe count"] = 0;
-                            jsonStats[snipers[i].id]["death count"] = 0;
-                            jsonStats[snipers[i].id]["emojis"] = "";
+                        if(!(snipers[i].id in jsonStats2)) {
+                            jsonStats2[snipers[i].id] = {};
+                            jsonStats2[snipers[i].id]["name"] = snipers[i].displayName;
+                            jsonStats2[snipers[i].id]["snipe count"] = 0;
+                            jsonStats2[snipers[i].id]["death count"] = 0;
+                            jsonStats2[snipers[i].id]["emojis"] = "";
                         }
                     }
-                    const updatedJsonStats = JSON.stringify(jsonStats, null, 2);
-                    fs.writeFileSync(filePath, updatedJsonStats, 'utf8');
+                    const updatedJsonStats = JSON.stringify(jsonStats2, null, 2);
+                    fs.writeFileSync(filePath, updatedJsonStats2, 'utf8');
                     message.reply("**Snipers updated**")
                 }
 
@@ -141,20 +142,20 @@ client.on('messageCreate', (message) => {
                 // display own stats
                 if(command == "stats" && member.roles.cache.has(sniperRoleID)) {
                     const memberid = member.user.id;
-                    const snipeCount = jsonStats[memberid]["snipe count"];
-                    const deathCount = jsonStats[memberid]["death count"];
-                    const emojis = jsonStats[memberid]["emojis"];
-                    let denom = jsonStats[memberid]["death count"];
+                    const snipeCount = jsonStats2[memberid]["snipe count"];
+                    const deathCount = jsonStats2[memberid]["death count"];
+                    const emojis = jsonStats2[memberid]["emojis"];
+                    let denom = jsonStats2[memberid]["death count"];
                     if(denom == 0) {denom = 1;}
                     message.reply(`## **Player Stats**\n\n**${member.displayName}** has **${snipeCount} snipes** and **${deathCount} deaths**, **KDR (${snipeCount/denom})**\n\n${emojis}`);
                 }
                 // display other stats
                 else if (command.includes("stats") && mentioned.size == 1 && mentioned_members[0].roles.cache.has(sniperRoleID)) {
                     const memberid = mentioned_members[0].user.id;
-                    const snipeCount = jsonStats[memberid]["snipe count"];
-                    const deathCount = jsonStats[memberid]["death count"];
-                    const emojis = jsonStats[memberid]["emojis"];
-                    let denom = jsonStats[memberid]["death count"];
+                    const snipeCount = jsonStats2[memberid]["snipe count"];
+                    const deathCount = jsonStats2[memberid]["death count"];
+                    const emojis = jsonStats2[memberid]["emojis"];
+                    let denom = jsonStats2[memberid]["death count"];
                     if(denom == 0) {denom = 1;}
                     message.reply(`## **Player Stats**\n\n**${mentioned_members[0].displayName}** has **${snipeCount} snipes** and **${deathCount} deaths**, **KDR (${snipeCount/denom})**\n\n${emojis}`);
                 }
@@ -170,15 +171,15 @@ client.on('messageCreate', (message) => {
                     const snipeBoardData = [];
                     const deathBoardData = [];
                     const kdrBoardData = [];
-                    const keys = Object.keys(jsonStats);
+                    const keys = Object.keys(jsonStats2);
                     let denom = 1;
                     for(let i = 0; i < keys.length; i++) {
                         const key = keys[i];
-                        snipeCounts.push(jsonStats[key]["snipe count"]);
-                        deathCounts.push(jsonStats[key]["death count"]);
-                        denom = jsonStats[key]["death count"];
+                        snipeCounts.push(jsonStats2[key]["snipe count"]);
+                        deathCounts.push(jsonStats2[key]["death count"]);
+                        denom = jsonStats2[key]["death count"];
                         if(denom == 0) {denom = 1;}
-                        kdrCounts.push(jsonStats[key]["snipe count"]/denom)
+                        kdrCounts.push(jsonStats2[key]["snipe count"]/denom)
                     }
                     snipeCounts.sort(function(a, b) {
                         return b - a;
@@ -192,26 +193,26 @@ client.on('messageCreate', (message) => {
                     snipeCounts.forEach(function(value, index) {
                         for(let i = 0; i < keys.length; i++) {
                             const key = keys[i];
-                            if(jsonStats[key]["snipe count"] == value && !(Object.values(snipeBoard).includes(jsonStats[key]["name"]))) {
-                                snipeBoard[index] = jsonStats[key]["name"];
+                            if(jsonStats2[key]["snipe count"] == value && !(Object.values(snipeBoard).includes(jsonStats[key]["name"]))) {
+                                snipeBoard[index] = jsonStats2[key]["name"];
                             }
                         }
                     });
                     deathCounts.forEach(function(value, index) {
                         for(let i = 0; i < keys.length; i++) {
                             const key = keys[i]
-                            if(jsonStats[key]["death count"] == value && !(Object.values(deathBoard).includes(jsonStats[key]["name"]))) {
-                                deathBoard[index] = jsonStats[key]["name"];
+                            if(jsonStats2[key]["death count"] == value && !(Object.values(deathBoard).includes(jsonStats[key]["name"]))) {
+                                deathBoard[index] = jsonStats2[key]["name"];
                             }
                         }
                     });
                     kdrCounts.forEach(function(value, index) {
                         for(let i = 0; i < keys.length; i++) {
                             const key = keys[i]
-                            denom = jsonStats[key]["death count"];
+                            denom = jsonStats2[key]["death count"];
                             if(denom == 0) {denom = 1;}
-                            if(jsonStats[key]["snipe count"]/denom == value && !(Object.values(kdrBoard).includes(jsonStats[key]["name"]))) {
-                                kdrBoard[index] = jsonStats[key]["name"];
+                            if(jsonStats2[key]["snipe count"]/denom == value && !(Object.values(kdrBoard).includes(jsonStats[key]["name"]))) {
+                                kdrBoard[index] = jsonStats2[key]["name"];
                             }
                         }
                     });
@@ -291,12 +292,12 @@ client.on('messageReactionAdd', async (reaction, user) => {
 
     // fixing stats
     mentioned.forEach(member => {
-        jsonStats[member.id]["death count"] -= 1;
-        jsonStats[member.id]["emojis"] += "😇";
+        jsonStats2[member.id]["death count"] -= 1;
+        jsonStats2[member.id]["emojis"] += "😇";
       });
-    jsonStats[sender.id]["snipe count"] -= mentioned_members.length;
-    jsonStats[sender.id]["emojis"] += "🏴".repeat(mentioned_members.length);
-    const updatedJsonStats = JSON.stringify(jsonStats, null, 2);
+    jsonStats2[sender.id]["snipe count"] -= mentioned_members.length;
+    jsonStats2[sender.id]["emojis"] += "🏴".repeat(mentioned_members.length);
+    const updatedJsonStats = JSON.stringify(jsonStats2, null, 2);
     fs.writeFileSync(filePath, updatedJsonStats, 'utf8');
 
     // replying with illegal notification
