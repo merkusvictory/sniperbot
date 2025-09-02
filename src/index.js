@@ -98,7 +98,7 @@ client.on('messageCreate', async (message) => {
     const mentioned_members = [];
 
     // checks if message is in snipe channel
-    if (message.channel.name == "sniped") {
+    if (message.channel.name == "📸sniped") {
 
         // adds flag reaction to snipe messages
         if (message.author.bot && message.content.includes("just sniped")) {
