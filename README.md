@@ -6,7 +6,9 @@ SniperBot keeps a leaderboard of snipes, deaths, and kill-death ratio
 COMMANDS  
 !listsnipers - lists people with sniper role  
 !updatesnipers - updates JSON file with new snipers  
+!bounty - view current bounty  
 !stats - view own stats  
 !stats @mention - view other sniper's stats  
-!leaderboard - lists snipers with most kills and deaths  
+!leaderboard - lists snipers with highest overall points
+!rawleaderboard - lists snipers with most kills and deaths  
 !kdrleaderboard - lists snipers with highest kill-death ratio  
