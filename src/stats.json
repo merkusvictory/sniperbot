@@ -65,16 +65,16 @@
     "death count": 20,
     "emojis": "🏆🏴"
   },
-  "1253725244229812234": {
-    "name": "siren ☆",
-    "snipe count": 6,
-    "death count": 12,
-    "emojis": ""
-  },
   "665346678957670402": {
     "name": "starryshadow",
     "snipe count": 1,
     "death count": 3,
+    "emojis": ""
+  },
+  "1389247875124564138": {
+    "name": "siren",
+    "snipe count": 6,
+    "death count": 12,
     "emojis": ""
   }
 }
