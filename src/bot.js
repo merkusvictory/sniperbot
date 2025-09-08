@@ -53,11 +53,13 @@ client.on('ready', (c) => {
             }
             jsonStats2[memberId]["isBounty"] = { active: false, alive: false};
         }
+        const updatedJsonStats = JSON.stringify(jsonStats2, null, 2);
+        fs.writeFileSync(filePath2, updatedJsonStats, 'utf8');
     }, {
         timezone: "America/New_York"
     });
 
-    cron.schedule('0 18 * * 1-5', async () => {
+    cron.schedule('30 6 * * 1-5', async () => {
         const channel = await client.channels.fetch(snipedChannelID);
         const guild = channel.guild;
 
@@ -82,7 +84,7 @@ function getCurrentBountyId(jsonStats) {
     const keys = Object.keys(jsonStats);
     for (let i = 0; i < keys.length; i++) {
         const memberId = keys[i];
-        if (jsonStats[memberId]["isBounty"].active) {
+        if (jsonStats[memberId]["isBounty"].active && jsonStats[memberId]["isBounty"].alive) {
             return memberId; // Return the first active bounty found
         }
     }
