@@ -59,7 +59,7 @@ client.on('ready', (c) => {
         timezone: "America/New_York"
     });
 
-    cron.schedule('30 6 * * 1-5', async () => {
+    cron.schedule('30 8 * * 1-5', async () => {
         const channel = await client.channels.fetch(snipedChannelID);
         const guild = channel.guild;
 
