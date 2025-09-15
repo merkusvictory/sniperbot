@@ -54,6 +54,7 @@ client.on('ready', (c) => {
             jsonStats2[memberId]["isBounty"] = { active: false, alive: false};
         }
         const updatedJsonStats = JSON.stringify(jsonStats2, null, 2);
+        console.log(updatedJsonStats);
         fs.writeFileSync(filePath2, updatedJsonStats, 'utf8');
     }, {
         timezone: "America/New_York"
@@ -73,7 +74,7 @@ client.on('ready', (c) => {
         jsonStats2[bountyId]["isBounty"] = { active: true, alive: true};
         const updatedJsonStats = JSON.stringify(jsonStats2, null, 2);
         fs.writeFileSync(filePath2, updatedJsonStats, 'utf8');
-        channel.send(`💰 Today's bounty is **${jsonStats2[bountyId]["name"]}** 💰`);
+        channel.send(`💰 Today's bounty is **${jsonStats2[bountyId]["name"]} <@${bountyId}>** 💰`);
     }, {
         timezone: "America/New_York"
     });
@@ -164,7 +165,7 @@ client.on('messageCreate', async (message) => {
             let reply_message = `🔫 **${message.member.displayName}** just sniped${mentioned_members_output}! 🔫`;
             // sending bounty found message
             if (isBountySnipe) {
-                reply_message += `🤑 **${message.member.displayName}** sniped bounty ${jsonStats2[bountyId]["name"]}! 🤑`;
+                reply_message += `\n🤑 **${message.member.displayName}** sniped bounty **${jsonStats2[bountyId]["name"]}**! 🤑`;
             }
             message.reply(reply_message);
 
@@ -179,7 +180,6 @@ client.on('messageCreate', async (message) => {
                 }
                 mentioned.forEach(member => {
                     jsonStats2[member.id]["death count"] += 1;
-                    jsonStats2[member.id]["emojis"] += "💀";
                     jsonStats2[member.id]["overall points"] -= 1;
                 });
                 const updatedJsonStats = JSON.stringify(jsonStats2, null, 2);
