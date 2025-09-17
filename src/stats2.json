@@ -14,14 +14,14 @@
   "378541116544253984": {
     "name": "Dill",
     "snipe count": 0,
-    "death count": 3,
+    "death count": 7,
     "bounty snipe count": 0,
     "bounty survival count": 1,
     "isBounty": {
       "active": false,
       "alive": false
     },
-    "overall points": 8
+    "overall points": 4
   },
   "443877245434724373": {
     "name": "bee guy",
@@ -37,7 +37,31 @@
   },
   "458687922569478144": {
     "name": "UltraPlasma",
-    "snipe count": 3,
+    "snipe count": 4,
+    "death count": 5,
+    "bounty snipe count": 0,
+    "bounty survival count": 0,
+    "isBounty": {
+      "active": false,
+      "alive": false
+    },
+    "overall points": 2
+  },
+  "642806432126861332": {
+    "name": "Rlaxy",
+    "snipe count": 0,
+    "death count": 2,
+    "bounty snipe count": 0,
+    "bounty survival count": 0,
+    "isBounty": {
+      "active": false,
+      "alive": false
+    },
+    "overall points": -2
+  },
+  "665346678957670402": {
+    "name": "starryshadow",
+    "snipe count": 0,
     "death count": 4,
     "bounty snipe count": 0,
     "bounty survival count": 0,
@@ -45,35 +69,11 @@
       "active": false,
       "alive": false
     },
-    "overall points": 1
-  },
-  "642806432126861332": {
-    "name": "Rlaxy",
-    "snipe count": 0,
-    "death count": 1,
-    "bounty snipe count": 0,
-    "bounty survival count": 0,
-    "isBounty": {
-      "active": false,
-      "alive": false
-    },
-    "overall points": -1
-  },
-  "665346678957670402": {
-    "name": "starryshadow",
-    "snipe count": 0,
-    "death count": 3,
-    "bounty snipe count": 0,
-    "bounty survival count": 0,
-    "isBounty": {
-      "active": true,
-      "alive": true
-    },
-    "overall points": -3
+    "overall points": -4
   },
   "715963994124451961": {
     "name": "Wadwad X",
-    "snipe count": 8,
+    "snipe count": 12,
     "death count": 6,
     "bounty snipe count": 1,
     "bounty survival count": 0,
@@ -81,19 +81,19 @@
       "active": false,
       "alive": false
     },
-    "overall points": 15
+    "overall points": 23
   },
   "722466310587678750": {
     "name": "ToxicGamer841",
-    "snipe count": 4,
-    "death count": 1,
-    "bounty snipe count": 1,
+    "snipe count": 9,
+    "death count": 2,
+    "bounty snipe count": 2,
     "bounty survival count": 0,
     "isBounty": {
       "active": false,
       "alive": false
     },
-    "overall points": 12
+    "overall points": 26
   },
   "880198257681264741": {
     "name": "graphene__",
@@ -109,38 +109,38 @@
   },
   "992419513033302056": {
     "name": "Harsimranjeet Singh",
-    "snipe count": 14,
-    "death count": 4,
-    "bounty snipe count": 1,
+    "snipe count": 19,
+    "death count": 9,
+    "bounty snipe count": 2,
     "bounty survival count": 0,
     "isBounty": {
       "active": false,
       "alive": false
     },
-    "overall points": 29
+    "overall points": 39
   },
   "1389247875124564138": {
     "name": "siren",
-    "snipe count": 0,
-    "death count": 0,
+    "snipe count": 1,
+    "death count": 1,
     "bounty snipe count": 0,
     "bounty survival count": 0,
     "isBounty": {
       "active": false,
       "alive": false
     },
-    "overall points": 0
+    "overall points": 1
   },
   "491700514698952752": {
     "name": "Milesgamer856",
-    "snipe count": 4,
-    "death count": 2,
+    "snipe count": 5,
+    "death count": 5,
     "bounty snipe count": 0,
     "bounty survival count": 0,
     "isBounty": {
       "active": false,
       "alive": false
     },
-    "overall points": 6
+    "overall points": 5
   }
 }
