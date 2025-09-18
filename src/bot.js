@@ -349,7 +349,7 @@ client.on('messageCreate', async (message) => {
                             const key = keys[i]
                             denom = jsonStats2[key]["death count"];
                             if (denom == 0) { denom = 1; }
-                            if (jsonStats2[key]["snipe count"] / denom == value && !(Object.values(kdrBoard).includes(jsonStats[key]["name"]))) {
+                            if (jsonStats2[key]["snipe count"] / denom == value && !(Object.values(kdrBoard).includes(jsonStats2[key]["name"]))) {
                                 kdrBoard[index] = jsonStats2[key]["name"];
                             }
                         }
