@@ -323,7 +323,7 @@ client.on('messageCreate', async (message) => {
                     snipeCounts.forEach(function (value, index) {
                         for (let i = 0; i < keys.length; i++) {
                             const key = keys[i];
-                            if (jsonStats2[key]["snipe count"] == value && !(Object.values(snipeBoard).includes(jsonStats[key]["name"]))) {
+                            if (jsonStats2[key]["snipe count"] == value && !(Object.values(snipeBoard).includes(jsonStats2[key]["name"]))) {
                                 snipeBoard[index] = jsonStats2[key]["name"];
                             }
                         }
