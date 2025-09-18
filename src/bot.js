@@ -331,7 +331,7 @@ client.on('messageCreate', async (message) => {
                     deathCounts.forEach(function (value, index) {
                         for (let i = 0; i < keys.length; i++) {
                             const key = keys[i]
-                            if (jsonStats2[key]["death count"] == value && !(Object.values(deathBoard).includes(jsonStats[key]["name"]))) {
+                            if (jsonStats2[key]["death count"] == value && !(Object.values(deathBoard).includes(jsonStats2[key]["name"]))) {
                                 deathBoard[index] = jsonStats2[key]["name"];
                             }
                         }
@@ -339,7 +339,7 @@ client.on('messageCreate', async (message) => {
                     overallCounts.forEach(function (value, index) {
                         for (let i = 0; i < keys.length; i++) {
                             const key = keys[i];
-                            if (jsonStats2[key]["overall points"] == value && !(Object.values(overallBoard).includes(jsonStats[key]["name"]))) {
+                            if (jsonStats2[key]["overall points"] == value && !(Object.values(overallBoard).includes(jsonStats2[key]["name"]))) {
                                 overallBoard[index] = jsonStats2[key]["name"];
                             }
                         }
