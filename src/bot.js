@@ -284,7 +284,7 @@ client.on('messageCreate', async (message) => {
                 }
 
                 // display leaderboard
-                if (command == "leaderboard" || command == "kdrleaderboard" || command == "rawleaderboard") {
+                if (command == "leaderboard" || command == "kdrleaderboard" || command == "rawleaderboard" || command == "simran") {
                     const snipeCounts = [];
                     const deathCounts = [];
                     const kdrCounts = [];
@@ -382,7 +382,7 @@ client.on('messageCreate', async (message) => {
                     const kdrLeaderboardData = kdrBoardData
                         .map((entry, index) => `${index + 1}. **${entry.name}** – ${entry.points}`)
                         .join('\n');
-                    if (command == "leaderboard")
+                    if (command == "leaderboard" || command == "simran")
                         message.reply(`## 🏆 **Overall Leaderboard** 🏆\n\n${overallLeaderboardData}`)
                     if (command == "rawleaderboard")
                         message.reply(`## 🔫 **Snipe Leaderboard** 🔫\n\n${snipeLeaderboardData}\n\n## 💀 **Death Leaderboard** 💀\n\n${deathLeaderboardData}`);
