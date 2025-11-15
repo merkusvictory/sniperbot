@@ -266,28 +266,39 @@ client.on('messageCreate', async (message) => {
                 // display other stats
                 else if (command.includes("stats") && mentioned.size == 1 && mentioned_members[0].roles.cache.has(sniperRoleID)) {
                     const memberid = mentioned_members[0].user.id;
+                    let snipeCount, deathCount, emojis, denom;
+                    let snipeCount2, deathCount2, overallPoints, bountySnipeCount, bountySurvivalCount, denom2;
                     // season 1 stats
                     if (jsonStats[memberid]) {
-                        const snipeCount = jsonStats[memberid]["snipe count"];
-                        const deathCount = jsonStats[memberid]["death count"];
-                        const emojis = jsonStats[memberid]["emojis"];
-                        let denom = jsonStats[memberid]["death count"];
+                        snipeCount = jsonStats[memberid]["snipe count"];
+                        deathCount = jsonStats[memberid]["death count"];
+                        emojis = jsonStats[memberid]["emojis"];
+                        denom = jsonStats[memberid]["death count"];
                         if (denom == 0) { denom = 1; }
                     }
                     else {
-                        const snipeCount = 0;
-                        const deathCount = 0;
-                        const emojis = "";
-                        let denom = 1;
+                        snipeCount = 0;
+                        deathCount = 0;
+                        emojis = "";
+                        denom = 1;
                     }
                     // season 2 stats
-                    const snipeCount2 = jsonStats2[memberid]["snipe count"];
-                    const deathCount2 = jsonStats2[memberid]["death count"];
-                    const overallPoints = jsonStats2[memberid]["overall points"];
-                    const bountySnipeCount = jsonStats2[memberid]["bounty snipe count"];
-                    const bountySurvivalCount = jsonStats2[memberid]["bounty survival count"];
-                    let denom2 = jsonStats2[memberid]["death count"];
-                    if (denom2 == 0) { denom2 = 1; }
+                    if (jsonStats2[memberid]) {
+                        snipeCount2 = jsonStats2[memberid]["snipe count"];
+                        deathCount2 = jsonStats2[memberid]["death count"];
+                        overallPoints = jsonStats2[memberid]["overall points"];
+                        bountySnipeCount = jsonStats2[memberid]["bounty snipe count"];
+                        bountySurvivalCount = jsonStats2[memberid]["bounty survival count"];
+                        denom2 = jsonStats2[memberid]["death count"];
+                        if (denom2 == 0) { denom2 = 1; }
+                    } else {
+                        snipeCount2 = 0;
+                        deathCount2 = 0
+                        overallPoints = 0;
+                        bountySnipeCount = 0;
+                        bountySurvivalCount = 0;
+                        denom2 = 1;
+                    }
                     message.reply(`## **Player Stats - ${mentioned_members[0].displayName}**\n\n**Season 1**\t **${snipeCount}** snipes and **${deathCount}** deaths, **KDR (${snipeCount / denom})**\n**Season 2**\t **${overallPoints}** overall points, **${snipeCount2}** snipes, and **${deathCount2}** deaths, **KDR (${snipeCount2 / denom2})**\n\t\t\t\t\t\t**${bountySnipeCount}** bounty snipes, **${bountySurvivalCount}** bounty survivals`);
                 }
 
