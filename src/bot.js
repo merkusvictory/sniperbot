@@ -267,11 +267,19 @@ client.on('messageCreate', async (message) => {
                 else if (command.includes("stats") && mentioned.size == 1 && mentioned_members[0].roles.cache.has(sniperRoleID)) {
                     const memberid = mentioned_members[0].user.id;
                     // season 1 stats
-                    const snipeCount = jsonStats[memberid]["snipe count"];
-                    const deathCount = jsonStats[memberid]["death count"];
-                    const emojis = jsonStats[memberid]["emojis"];
-                    let denom = jsonStats[memberid]["death count"];
-                    if (denom == 0) { denom = 1; }
+                    if (jsonStats[memberid]) {
+                        const snipeCount = jsonStats[memberid]["snipe count"];
+                        const deathCount = jsonStats[memberid]["death count"];
+                        const emojis = jsonStats[memberid]["emojis"];
+                        let denom = jsonStats[memberid]["death count"];
+                        if (denom == 0) { denom = 1; }
+                    }
+                    else {
+                        const snipeCount = 0;
+                        const deathCount = 0;
+                        const emojis = "";
+                        let denom = 1;
+                    }
                     // season 2 stats
                     const snipeCount2 = jsonStats2[memberid]["snipe count"];
                     const deathCount2 = jsonStats2[memberid]["death count"];
