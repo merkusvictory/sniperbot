@@ -40,14 +40,14 @@
   "458687922569478144": {
     "name": "UltraPlasma",
     "snipe count": 14,
-    "death count": 30,
+    "death count": 31,
     "bounty snipe count": 0,
     "bounty survival count": 0,
     "isBounty": {
       "active": false,
       "alive": false
     },
-    "overall points": -4,
+    "overall points": -5,
     "emojis": "undefined🏆🏆🏆🏆🏆🏆😇🏆🏴😇😇"
   },
   "642806432126861332": {
@@ -103,15 +103,15 @@
   },
   "880198257681264741": {
     "name": "graphene__",
-    "snipe count": 15,
+    "snipe count": 16,
     "death count": 40,
     "bounty snipe count": 0,
     "bounty survival count": 1,
     "isBounty": {
-      "active": false,
-      "alive": false
+      "active": true,
+      "alive": true
     },
-    "overall points": 1,
+    "overall points": 3,
     "emojis": "undefined🏆🏆🏆🏆🏆🏆🏆"
   },
   "992419513033302056": {
