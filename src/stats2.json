@@ -95,8 +95,8 @@
     "bounty snipe count": 2,
     "bounty survival count": 1,
     "isBounty": {
-      "active": false,
-      "alive": false
+      "active": true,
+      "alive": true
     },
     "overall points": 47,
     "emojis": "undefined🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏴🏆"
