@@ -2,27 +2,27 @@
   "232223166167121921": {
     "name": "Iced Tea",
     "snipe count": 5,
-    "death count": 14,
+    "death count": 15,
     "bounty snipe count": 0,
     "bounty survival count": 5,
     "isBounty": {
       "active": false,
       "alive": false
     },
-    "overall points": 51,
+    "overall points": 50,
     "emojis": "undefined😇🏆"
   },
   "378541116544253984": {
     "name": "Dill",
     "snipe count": 0,
-    "death count": 32,
+    "death count": 33,
     "bounty snipe count": 0,
     "bounty survival count": 3,
     "isBounty": {
       "active": false,
       "alive": false
     },
-    "overall points": 1,
+    "overall points": 0,
     "emojis": "undefined😇"
   },
   "443877245434724373": {
@@ -77,7 +77,7 @@
   },
   "715963994124451961": {
     "name": "Wadwad X",
-    "snipe count": 66,
+    "snipe count": 67,
     "death count": 26,
     "bounty snipe count": 3,
     "bounty survival count": 5,
@@ -85,20 +85,20 @@
       "active": false,
       "alive": false
     },
-    "overall points": 174,
-    "emojis": "undefined🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆😇🏆🏆🏆🏆"
+    "overall points": 176,
+    "emojis": "undefined🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆😇🏆🏆🏆🏆🏆"
   },
   "722466310587678750": {
     "name": "ToxicGamer841",
     "snipe count": 23,
     "death count": 15,
     "bounty snipe count": 2,
-    "bounty survival count": 1,
+    "bounty survival count": 2,
     "isBounty": {
-      "active": true,
-      "alive": true
+      "active": false,
+      "alive": false
     },
-    "overall points": 47,
+    "overall points": 58,
     "emojis": "undefined🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏴🏆"
   },
   "880198257681264741": {
@@ -116,16 +116,16 @@
   },
   "992419513033302056": {
     "name": "Harsimranjeet Singh",
-    "snipe count": 92,
+    "snipe count": 94,
     "death count": 25,
-    "bounty snipe count": 5,
+    "bounty snipe count": 6,
     "bounty survival count": 1,
     "isBounty": {
       "active": false,
       "alive": false
     },
-    "overall points": 183,
-    "emojis": "undefined🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏴🏴🏴🏴🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆😇🏆🏴🏆🏆🏆🏆🏴🏆🏆🏆🏆🏆🏆🏆🏆🏴🏆🏆🏆🏆🏆🏆🏆🏆🏆"
+    "overall points": 192,
+    "emojis": "undefined🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏴🏴🏴🏴🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆😇🏆🏴🏆🏆🏆🏆🏴🏆🏆🏆🏆🏆🏆🏆🏆🏴🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆"
   },
   "1389247875124564138": {
     "name": "siren",
@@ -143,15 +143,15 @@
   "491700514698952752": {
     "name": "Milesgamer856",
     "snipe count": 45,
-    "death count": 22,
+    "death count": 23,
     "bounty snipe count": 1,
     "bounty survival count": 3,
     "isBounty": {
       "active": false,
       "alive": false
     },
-    "overall points": 94,
-    "emojis": "undefined🏆🏆🏆🏆🏆🏆🏆🏆🏴🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆😇🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆😇🏆🏆🏆🏆🏆"
+    "overall points": 90,
+    "emojis": "undefined🏆🏆🏆🏆🏆🏆🏆🏆🏴🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆😇🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆😇🏆🏆🏆🏆🏆🏆"
   },
   "961303007209848873": {
     "name": "nonabelian",
@@ -173,8 +173,8 @@
     "bounty snipe count": 0,
     "bounty survival count": 7,
     "isBounty": {
-      "active": false,
-      "alive": false
+      "active": true,
+      "alive": true
     },
     "overall points": 78
   }
