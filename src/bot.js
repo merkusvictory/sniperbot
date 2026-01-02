@@ -35,49 +35,49 @@ const cron = require('node-cron');
 client.on('ready', (c) => {
     console.log(`${c.user.username} is set`);
 
-    cron.schedule('0 0 * * *', async () => {
-        // removing bounty roles
+    // cron.schedule('0 0 * * *', async () => {
+    //     // removing bounty roles
 
-        const channel = await client.channels.fetch(snipedChannelID);
+    //     const channel = await client.channels.fetch(snipedChannelID);
 
-        const keys = Object.keys(jsonStats2)
-        for (let i = 0; i < keys.length; i++) {
-            const memberId = keys[i];
-            if (jsonStats2[memberId]["isBounty"].active && jsonStats2[memberId]["isBounty"].alive) {
-                // if bounty survived the day
-                channel.send(`😎 Bounty **${jsonStats2[memberId]["name"]}** survived the day! 😎`);
-                jsonStats2[memberId]["overall points"] += 11;
-                jsonStats2[memberId]["bounty survival count"] += 1;
-                const updatedJsonStats = JSON.stringify(jsonStats2, null, 2);
-                fs.writeFileSync(filePath2, updatedJsonStats, 'utf8');
-            }
-            jsonStats2[memberId]["isBounty"] = { active: false, alive: false};
-        }
-        const updatedJsonStats = JSON.stringify(jsonStats2, null, 2);
-        console.log(updatedJsonStats);
-        fs.writeFileSync(filePath2, updatedJsonStats, 'utf8');
-    }, {
-        timezone: "America/New_York"
-    });
+    //     const keys = Object.keys(jsonStats2)
+    //     for (let i = 0; i < keys.length; i++) {
+    //         const memberId = keys[i];
+    //         if (jsonStats2[memberId]["isBounty"].active && jsonStats2[memberId]["isBounty"].alive) {
+    //             // if bounty survived the day
+    //             channel.send(`😎 Bounty **${jsonStats2[memberId]["name"]}** survived the day! 😎`);
+    //             jsonStats2[memberId]["overall points"] += 11;
+    //             jsonStats2[memberId]["bounty survival count"] += 1;
+    //             const updatedJsonStats = JSON.stringify(jsonStats2, null, 2);
+    //             fs.writeFileSync(filePath2, updatedJsonStats, 'utf8');
+    //         }
+    //         jsonStats2[memberId]["isBounty"] = { active: false, alive: false};
+    //     }
+    //     const updatedJsonStats = JSON.stringify(jsonStats2, null, 2);
+    //     console.log(updatedJsonStats);
+    //     fs.writeFileSync(filePath2, updatedJsonStats, 'utf8');
+    // }, {
+    //     timezone: "America/New_York"
+    // });
 
-    cron.schedule('30 8 * * 1-5', async () => {
-        const channel = await client.channels.fetch(snipedChannelID);
-        const guild = channel.guild;
+    // cron.schedule('30 8 * * 1-5', async () => {
+    //     const channel = await client.channels.fetch(snipedChannelID);
+    //     const guild = channel.guild;
 
-        const sniperRole = guild.roles.cache.get(sniperRoleID);
+    //     const sniperRole = guild.roles.cache.get(sniperRoleID);
 
-        // Get members who have the sniper role
-        const keys = sniperRole.members.map(member => member.id);
+    //     // Get members who have the sniper role
+    //     const keys = sniperRole.members.map(member => member.id);
 
-        // setting random bounty
-        const bountyId = keys[Math.floor(Math.random() * keys.length)];
-        jsonStats2[bountyId]["isBounty"] = { active: true, alive: true};
-        const updatedJsonStats = JSON.stringify(jsonStats2, null, 2);
-        fs.writeFileSync(filePath2, updatedJsonStats, 'utf8');
-        channel.send(`💰 Today's bounty is **${jsonStats2[bountyId]["name"]} <@${bountyId}>** 💰`);
-    }, {
-        timezone: "America/New_York"
-    });
+    //     // setting random bounty
+    //     const bountyId = keys[Math.floor(Math.random() * keys.length)];
+    //     jsonStats2[bountyId]["isBounty"] = { active: true, alive: true};
+    //     const updatedJsonStats = JSON.stringify(jsonStats2, null, 2);
+    //     fs.writeFileSync(filePath2, updatedJsonStats, 'utf8');
+    //     channel.send(`💰 Today's bounty is **${jsonStats2[bountyId]["name"]} <@${bountyId}>** 💰`);
+    // }, {
+    //     timezone: "America/New_York"
+    // });
 });
 
 // get bounty function
