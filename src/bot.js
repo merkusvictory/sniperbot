@@ -201,6 +201,7 @@ client.on('messageCreate', async (message) => {
             try {
                 const command = message.content.slice(1);
 
+                // list current marked command
                 if (command == "marked") {
                     const snapshot = await db.collection("users").get();
                     const currStats = {};
@@ -208,10 +209,7 @@ client.on('messageCreate', async (message) => {
                         currStats[doc.id] = doc.data();
                     });
                     const markedList = getCurrentMarkedList(currStats);
-                    message.reply(`📍 Current marked players are 
-                    ${currStats[markedList[0]]["name"]} (${currStats[markedList[0]]["accumulation"]}), 
-                    ${currStats[markedList[1]]["name"]} (${currStats[markedList[1]]["accumulation"]}), and 
-                    ${currStats[markedList[2]]["name"]} (${currStats[markedList[2]]["accumulation"]})! 📍`);
+                    message.reply(`📍 Marked players are **${currStats[markedList[0]]["name"]}** (${currStats[markedList[0]]["accumulation"]}), **${currStats[markedList[1]]["name"]}** (${currStats[markedList[1]]["accumulation"]}), and **${currStats[markedList[2]]["name"]}** (${currStats[markedList[2]]["accumulation"]})! 📍`);
                 }
 
                 // list snipers command
