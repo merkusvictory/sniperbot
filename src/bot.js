@@ -32,7 +32,7 @@ const client = new Client({
     partials: [Partials.Message, Partials.Channel, Partials.Reaction, Partials.User],
 });
 
-const { db } = require("./config/firebase");
+const { db } = require("../firebase.js");
 
 /* 
 client.on("messageCreate", async (message) => { 
