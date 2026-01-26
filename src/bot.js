@@ -207,13 +207,12 @@ client.on('messageCreate', async (message) => {
                     snapshot.forEach(doc => {
                         currStats[doc.id] = doc.data();
                     });
-                }
-
-                const markedList = getCurrentMarkedList(currStats);
-                message.reply(`📍 Current marked players are 
+                    const markedList = getCurrentMarkedList(currStats);
+                    message.reply(`📍 Current marked players are 
                     ${currStats[markedList[0]]["name"]} (${currStats[markedList[0]]["accumulation"]}), 
                     ${currStats[markedList[1]]["name"]} (${currStats[markedList[1]]["accumulation"]}), and 
                     ${currStats[markedList[2]]["name"]} (${currStats[markedList[2]]["accumulation"]})! 📍`);
+                }
 
                 // list snipers command
                 if (command == "listsnipers") {
