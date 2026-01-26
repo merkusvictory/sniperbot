@@ -19,8 +19,10 @@
   },
   "homepage": "https://github.com/merkusvictory/sniperbot#readme",
   "dependencies": {
-    "discord.js": "^14.18.0",
-    "node-cron": "^4.2.1",
-    "express": "^4.19.2"
+    "discord.js": "^14.25.1",
+    "dotenv": "^17.2.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^13.6.0",
+    "node-cron": "^4.2.1"
   }
 }

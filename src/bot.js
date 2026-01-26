@@ -18,6 +18,8 @@ const jsonToken = JSON.parse(tokenFile);
 const TOKEN = jsonToken["token"];
 const CLIENTID = jsonToken["clientId"];
 
+const currStats = jsonStats2;
+
 const client = new Client({
     intents: [
         IntentsBitField.Flags.Guilds,
@@ -30,66 +32,35 @@ const client = new Client({
     partials: [Partials.Message, Partials.Channel, Partials.Reaction, Partials.User],
 });
 
+const { db } = require("./config/firebase");
+
+/* 
+client.on("messageCreate", async (message) => { 
+    if (message.author.bot) return; 
+    
+    const userRef = db.collection("users").doc(message.author.id); 
+    await userRef.set({ 
+    username: message.author.tag, 
+    lastMessage: message.content, 
+    timestamp: new Date() }, 
+    { merge: true }); 
+    });
+*/
+
 const cron = require('node-cron');
 
-client.on('ready', (c) => {
-    console.log(`${c.user.username} is set`);
+// get marked function
 
-    // cron.schedule('0 0 * * *', async () => {
-    //     // removing bounty roles
-
-    //     const channel = await client.channels.fetch(snipedChannelID);
-
-    //     const keys = Object.keys(jsonStats2)
-    //     for (let i = 0; i < keys.length; i++) {
-    //         const memberId = keys[i];
-    //         if (jsonStats2[memberId]["isBounty"].active && jsonStats2[memberId]["isBounty"].alive) {
-    //             // if bounty survived the day
-    //             channel.send(`😎 Bounty **${jsonStats2[memberId]["name"]}** survived the day! 😎`);
-    //             jsonStats2[memberId]["overall points"] += 11;
-    //             jsonStats2[memberId]["bounty survival count"] += 1;
-    //             const updatedJsonStats = JSON.stringify(jsonStats2, null, 2);
-    //             fs.writeFileSync(filePath2, updatedJsonStats, 'utf8');
-    //         }
-    //         jsonStats2[memberId]["isBounty"] = { active: false, alive: false};
-    //     }
-    //     const updatedJsonStats = JSON.stringify(jsonStats2, null, 2);
-    //     console.log(updatedJsonStats);
-    //     fs.writeFileSync(filePath2, updatedJsonStats, 'utf8');
-    // }, {
-    //     timezone: "America/New_York"
-    // });
-
-    // cron.schedule('30 8 * * 1-5', async () => {
-    //     const channel = await client.channels.fetch(snipedChannelID);
-    //     const guild = channel.guild;
-
-    //     const sniperRole = guild.roles.cache.get(sniperRoleID);
-
-    //     // Get members who have the sniper role
-    //     const keys = sniperRole.members.map(member => member.id);
-
-    //     // setting random bounty
-    //     const bountyId = keys[Math.floor(Math.random() * keys.length)];
-    //     jsonStats2[bountyId]["isBounty"] = { active: true, alive: true};
-    //     const updatedJsonStats = JSON.stringify(jsonStats2, null, 2);
-    //     fs.writeFileSync(filePath2, updatedJsonStats, 'utf8');
-    //     channel.send(`💰 Today's bounty is **${jsonStats2[bountyId]["name"]} <@${bountyId}>** 💰`);
-    // }, {
-    //     timezone: "America/New_York"
-    // });
-});
-
-// get bounty function
-function getCurrentBountyId(jsonStats) {
+function getCurrentMarkedList(jsonStats) {
     const keys = Object.keys(jsonStats);
+    let markedList = [];
     for (let i = 0; i < keys.length; i++) {
         const memberId = keys[i];
-        if (jsonStats[memberId]["isBounty"].active && jsonStats[memberId]["isBounty"].alive) {
-            return memberId; // Return the first active bounty found
+        if (jsonStats[memberId].isMarked) {
+            markedList.push(memberId); // Return the first active bounty found
         }
     }
-    return null;
+    return markedList;
 }
 
 client.on('messageCreate', async (message) => {
@@ -139,18 +110,10 @@ client.on('messageCreate', async (message) => {
 
         if (validSnipe) {
 
-            const bountyId = getCurrentBountyId(jsonStats2);
-            let isBountySnipe = false;
+            const userRef = db.collection("users").doc(member.id);
+            const doc = await userRef.get();
 
-            // checking if bounty was sniped
-            if (bountyId) {
-                mentioned.forEach(member => {
-                    if (member.id == bountyId && jsonStats2[bountyId]["isBounty"].active && jsonStats2[bountyId]["isBounty"].alive) {
-                        isBountySnipe = true;
-                        jsonStats2[bountyId]["isBounty"] = { active: true, alive: false, killerId: sender.id };
-                    }
-                });
-            }
+            const senderData = doc.data();
 
             // formatting output message
             for (let i = 0; i < mentioned_members.length; i++) {
@@ -161,33 +124,73 @@ client.on('messageCreate', async (message) => {
                     mentioned_members_output += ",";
             }
 
-            // sending snipe message
-            let reply_message = `🔫 **${message.member.displayName}** just sniped${mentioned_members_output}! 🔫`;
-            // sending bounty found message
-            if (isBountySnipe) {
-                reply_message += `\n🤑 **${message.member.displayName}** sniped bounty **${jsonStats2[bountyId]["name"]}**! 🤑`;
-            }
-            message.reply(reply_message);
-
+            let isMarkedTransfer = false;
+            let stolenMark;
+            let stolenMarkPoints;
             // updating new sniping stats
             try {
-                jsonStats2[member.id]["snipe count"] += mentioned_members.length;
-                jsonStats2[member.id]["emojis"] += "🏆".repeat(mentioned_members.length);
-                jsonStats2[member.id]["overall points"] += mentioned_members.length * 2;
-                if (isBountySnipe) {
-                    jsonStats2[member.id]["bounty snipe count"] += 1;
-                    jsonStats2[member.id]["overall points"] += 5;
+                const userRef = db.collection("users").doc(member.id);
+
+                if (senderData.isMarked) {
+                    await userRef.set({
+                        "snipe count": admin.firestore.FieldValue.increment(mentioned_members.length),
+                        "overall points": admin.firestore.FieldValue.increment(mentioned_members.length * 3),
+                        "accumulation": admin.firestore.FieldValue.increment(mentioned_members.length),
+                        "marked snipe count": admin.firestore.FieldValue.increment(mentioned_members.length)
+                    },
+                        { merge: true });
+                } else {
+                    await userRef.set({
+                        "snipe count": admin.firestore.FieldValue.increment(mentioned_members.length),
+                        "overall points": admin.firestore.FieldValue.increment(mentioned_members.length * 2)
+                    },
+                        { merge: true });
                 }
-                mentioned.forEach(member => {
-                    jsonStats2[member.id]["death count"] += 1;
-                    jsonStats2[member.id]["overall points"] -= 1;
-                });
-                const updatedJsonStats = JSON.stringify(jsonStats2, null, 2);
-                fs.writeFileSync(filePath2, updatedJsonStats, 'utf8');
+
+                for (const member of mentioned) {
+                    const mentionedRef = db.collection("users").doc(member.id);
+
+                    const mentionedDoc = await mentionedRef.get();
+                    const mentionedData = mentionedDoc.data();
+
+                    if (!isMarkedTransfer && mentionedData.isMarked && !senderData.isMarked) {
+                        isMarkedTransfer = true;
+                        stolenMark = member.id;
+                        stolenMarkPoints = mentionedData["accumulation"];
+                        await userRef.set({
+                            "isMarked": true,
+                            "accumulation": 1,
+                            "marked count": admin.firestore.FieldValue.increment(1),
+                            "marked snipe count": admin.firestore.FieldValue.increment(1),
+                            "overall points": admin.firestore.FieldValue.increment(mentionedData["accumulation"])
+                        },
+                            { merge: true });
+                        await mentionedRef.set({
+                            "death count": admin.firestore.FieldValue.increment(1),
+                            "overall points": admin.firestore.FieldValue.increment(-1),
+                            "isMarked": false,
+                            "accumulation": 0
+                        },
+                            { merge: true });
+                    } else {
+                        await mentionedRef.set({
+                            "death count": admin.firestore.FieldValue.increment(1),
+                            "overall points": admin.firestore.FieldValue.increment(-1)
+                        },
+                            { merge: true });
+                    }
+                };
             }
             catch (error) {
-                console.error("Error adding value to stats.json:", error);
+                console.error("Error adding value to firebase:", error);
             }
+            // sending snipe message
+            let reply_message = `🔫 **${message.member.displayName}** just sniped${mentioned_members_output}! 🔫`;
+            // sending marked transfer message
+            if (isMarkedTransfer) {
+                reply_message += `\n🩸 **${message.member.displayName}** sniped marked **<@${stolenMark}>** for ${stolenMarkPoints} accumulation points! 🩸`;
+            }
+            message.reply(reply_message);
         }
     }
 
@@ -198,12 +201,19 @@ client.on('messageCreate', async (message) => {
             try {
                 const command = message.content.slice(1);
 
-                // bounty command
-                if (command == "bounty") {
-                    const bountyId = getCurrentBountyId(jsonStats2);
-                    if (bountyId) message.reply(`💰 Current bounty is ${jsonStats2[bountyId]["name"]}! 💰`)
-                    else message.reply(`😔 There is no active bounty at the time 😔`)
+                if (command == "marked") {
+                    const snapshot = await db.collection("users").get();
+                    const currStats = {};
+                    snapshot.forEach(doc => {
+                        currStats[doc.id] = doc.data();
+                    });
                 }
+
+                const markedList = getCurrentMarkedList(currStats);
+                message.reply(`📍 Current marked players are 
+                    ${currStats[markedList[0]]["name"]} (${currStats[markedList[0]]["accumulation"]}), 
+                    ${currStats[markedList[1]]["name"]} (${currStats[markedList[1]]["accumulation"]}), and 
+                    ${currStats[markedList[2]]["name"]} (${currStats[markedList[2]]["accumulation"]})! 📍`);
 
                 // list snipers command
                 if (command == "listsnipers") {
@@ -216,6 +226,10 @@ client.on('messageCreate', async (message) => {
                     await guild.members.fetch();
                     const snipers = sniper.members.map(member => member.user);
                     for (let i = 0; i < snipers.length; i++) {
+                        const userRef = db.collection("users").doc(snipers[i].id);
+                        const doc = await userRef.get();
+                        const sniperData = doc.data();
+
                         if (!(snipers[i].id in jsonStats)) {
                             jsonStats[snipers[i].id] = {};
                             jsonStats[snipers[i].id]["name"] = snipers[i].displayName;
@@ -230,8 +244,21 @@ client.on('messageCreate', async (message) => {
                             jsonStats2[snipers[i].id]["death count"] = 0;
                             jsonStats2[snipers[i].id]["bounty snipe count"] = 0;
                             jsonStats2[snipers[i].id]["bounty survival count"] = 0;
-                            jsonStats2[snipers[i].id]["isBounty"] = { active: false, alive: false};
+                            jsonStats2[snipers[i].id]["isBounty"] = { active: false, alive: false };
                             jsonStats2[snipers[i].id]["overall points"] = 0;
+                        }
+                        if (!doc.exists) {
+                            await userRef.set({
+                                "name": snipers[i].displayName,
+                                "snipe count": 0,
+                                "death count": 0,
+                                "overall points": 0,
+                                "accumulation": 0,
+                                "marked snipe count": 0,
+                                "marked count": 0,
+                                "isMarked": false,
+                            },
+                                { merge: true });
                         }
                     }
                     const updatedJsonStats = JSON.stringify(jsonStats, null, 2);
@@ -247,6 +274,11 @@ client.on('messageCreate', async (message) => {
                 // display own stats
                 if (command == "stats" && member.roles.cache.has(sniperRoleID)) {
                     const memberid = member.user.id;
+                    const userRef = db.collection("users").doc(memberid);
+                    const doc = await userRef.get();
+
+                    const senderData = doc.data();
+
                     // season 1 stats
                     const snipeCount = jsonStats[memberid]["snipe count"];
                     const deathCount = jsonStats[memberid]["death count"];
@@ -261,13 +293,30 @@ client.on('messageCreate', async (message) => {
                     const bountySurvivalCount = jsonStats2[memberid]["bounty survival count"];
                     let denom2 = jsonStats2[memberid]["death count"];
                     if (denom2 == 0) { denom2 = 1; }
-                    message.reply(`## **Player Stats - ${member.displayName}**\n\n**Season 1**\t **${snipeCount}** snipes and **${deathCount}** deaths, **KDR (${snipeCount / denom})**\n**Season 2**\t **${overallPoints}** overall points, **${snipeCount2}** snipes, and **${deathCount2}** deaths, **KDR (${snipeCount2 / denom2})**\n\t\t\t\t\t\t**${bountySnipeCount}** bounty snipes, **${bountySurvivalCount}** bounty survivals`);
+                    // season 3 stats
+                    const snipeCount3 = senderData["snipe count"];
+                    const deathCount3 = senderData["death count"];
+                    const overallPoints3 = senderData["overall points"];
+                    const markedCount = senderData["marked count"];
+                    const markedSnipeCount = senderData["marked snipe count"];
+                    let denom3 = senderData["death count"];
+                    if (denom3 == 0) { denom3 = 1; }
+                    message.reply(`## **Player Stats - ${member.displayName}**\n\n
+                        **Season 1**\t **${snipeCount}** snipes and **${deathCount}** deaths, **KDR (${snipeCount / denom})**\n
+                        **Season 2**\t **${overallPoints}** overall points, **${snipeCount2}** snipes, and **${deathCount2}** deaths, **KDR (${snipeCount2 / denom2})**\n\t\t\t\t\t\t**${bountySnipeCount}** bounty snipes, **${bountySurvivalCount}** bounty survivals\n,
+                        **Season 3**\t **${overallPoints3}** overall points, **${snipeCount3}** snipes, and **${deathCount3}** deaths, **KDR (${snipeCount3 / denom3})**\n\t\t\t\t\t\t**${markedCount}** times as marked, **${markedSnipeCount}** snipes as marked`
+                    );
                 }
                 // display other stats
                 else if (command.includes("stats") && mentioned.size == 1 && mentioned_members[0].roles.cache.has(sniperRoleID)) {
                     const memberid = mentioned_members[0].user.id;
+                    const userRef = db.collection("users").doc(memberid);
+                    const doc = await userRef.get();
+                    const mentionedData = doc.exists ? doc.data() : null;
                     let snipeCount, deathCount, emojis, denom;
                     let snipeCount2, deathCount2, overallPoints, bountySnipeCount, bountySurvivalCount, denom2;
+                    let snipeCount3, deathCount3, overallPoints3, markedCount, markedSnipeCount, denom3;
+
                     // season 1 stats
                     if (jsonStats[memberid]) {
                         snipeCount = jsonStats[memberid]["snipe count"];
@@ -293,17 +342,47 @@ client.on('messageCreate', async (message) => {
                         if (denom2 == 0) { denom2 = 1; }
                     } else {
                         snipeCount2 = 0;
-                        deathCount2 = 0
+                        deathCount2 = 0;
                         overallPoints = 0;
                         bountySnipeCount = 0;
                         bountySurvivalCount = 0;
                         denom2 = 1;
                     }
-                    message.reply(`## **Player Stats - ${mentioned_members[0].displayName}**\n\n**Season 1**\t **${snipeCount}** snipes and **${deathCount}** deaths, **KDR (${snipeCount / denom})**\n**Season 2**\t **${overallPoints}** overall points, **${snipeCount2}** snipes, and **${deathCount2}** deaths, **KDR (${snipeCount2 / denom2})**\n\t\t\t\t\t\t**${bountySnipeCount}** bounty snipes, **${bountySurvivalCount}** bounty survivals`);
+                    // season 3 stats
+                    if (doc.exists) {
+                        snipeCount3 = mentionedData["snipe count"];
+                        deathCount3 = mentionedData["death count"];
+                        overallPoints3 = mentionedData["overall points"];
+                        markedCount = mentionedData["marked count"];
+                        markedSnipeCount = mentionedData["marked snipe count"];
+                        denom3 = mentionedData["death count"];
+                        if (denom3 == 0) { denom3 = 1; }
+                    } else {
+                        snipeCount3 = 0;
+                        deathCount3 = 0
+                        overallPoints3 = 0;
+                        markedCount = 0;
+                        markedSnipeCount = 0;
+                        denom3 = 1;
+                    }
+                    message.reply(`## **Player Stats - ${mentioned_members[0].displayName}**\n\n
+                        **Season 1**\t **${snipeCount}** snipes and **${deathCount}** deaths, **KDR (${snipeCount / denom})**\n
+                        **Season 2**\t **${overallPoints}** overall points, **${snipeCount2}** snipes, and **${deathCount2}** deaths, **KDR (${snipeCount2 / denom2})**\n\t\t\t\t\t\t**${bountySnipeCount}** bounty snipes, **${bountySurvivalCount}** bounty survivals\n
+                        **Season 3**\t **${overallPoints3}** overall points, **${snipeCount3}** snipes, and **${deathCount3}** deaths, **KDR (${snipeCount3 / denom3})**\n\t\t\t\t\t\t**${markedCount}** times as marked, **${markedSnipeCount}** snipes as marked`
+                    );
                 }
 
                 // display leaderboard
                 if (command == "leaderboard" || command == "kdrleaderboard" || command == "rawleaderboard" || command == "simran") {
+                    
+                    const snapshot = await db.collection("users").get();
+
+                    const currStats = {};
+
+                    snapshot.forEach(doc => {
+                        currStats[doc.id] = doc.data();
+                    });
+                    
                     const snipeCounts = [];
                     const deathCounts = [];
                     const kdrCounts = [];
@@ -316,16 +395,16 @@ client.on('messageCreate', async (message) => {
                     const deathBoardData = [];
                     const kdrBoardData = [];
                     const overallBoardData = [];
-                    const keys = Object.keys(jsonStats2);
+                    const keys = Object.keys(currStats);
                     let denom = 1;
                     for (let i = 0; i < keys.length; i++) {
                         const key = keys[i];
-                        snipeCounts.push(jsonStats2[key]["snipe count"]);
-                        deathCounts.push(jsonStats2[key]["death count"]);
-                        overallCounts.push(jsonStats2[key]["overall points"]);
-                        denom = jsonStats2[key]["death count"];
+                        snipeCounts.push(currStats[key]["snipe count"]);
+                        deathCounts.push(currStats[key]["death count"]);
+                        overallCounts.push(currStats[key]["overall points"]);
+                        denom = currStats[key]["death count"];
                         if (denom == 0) { denom = 1; }
-                        kdrCounts.push(jsonStats2[key]["snipe count"] / denom)
+                        kdrCounts.push(currStats[key]["snipe count"] / denom)
                     }
                     snipeCounts.sort(function (a, b) {
                         return b - a;
@@ -342,41 +421,41 @@ client.on('messageCreate', async (message) => {
                     snipeCounts.forEach(function (value, index) {
                         for (let i = 0; i < keys.length; i++) {
                             const key = keys[i];
-                            if (jsonStats2[key]["snipe count"] == value && !(Object.values(snipeBoard).includes(jsonStats2[key]["name"]))) {
-                                snipeBoard[index] = jsonStats2[key]["name"];
+                            if (currStats[key]["snipe count"] == value && !(Object.values(snipeBoard).includes(currStats[key]["name"]))) {
+                                snipeBoard[index] = currStats[key]["name"];
                             }
                         }
                     });
                     deathCounts.forEach(function (value, index) {
                         for (let i = 0; i < keys.length; i++) {
                             const key = keys[i]
-                            if (jsonStats2[key]["death count"] == value && !(Object.values(deathBoard).includes(jsonStats2[key]["name"]))) {
-                                deathBoard[index] = jsonStats2[key]["name"];
+                            if (currStats[key]["death count"] == value && !(Object.values(deathBoard).includes(currStats[key]["name"]))) {
+                                deathBoard[index] = currStats[key]["name"];
                             }
                         }
                     });
                     overallCounts.forEach(function (value, index) {
                         for (let i = 0; i < keys.length; i++) {
                             const key = keys[i];
-                            if (jsonStats2[key]["overall points"] == value && !(Object.values(overallBoard).includes(jsonStats2[key]["name"]))) {
-                                overallBoard[index] = jsonStats2[key]["name"];
+                            if (currStats[key]["overall points"] == value && !(Object.values(overallBoard).includes(currStats[key]["name"]))) {
+                                overallBoard[index] = currStats[key]["name"];
                             }
                         }
                     });
                     kdrCounts.forEach(function (value, index) {
                         for (let i = 0; i < keys.length; i++) {
                             const key = keys[i]
-                            denom = jsonStats2[key]["death count"];
+                            denom = currStats[key]["death count"];
                             if (denom == 0) { denom = 1; }
-                            if (jsonStats2[key]["snipe count"] / denom == value && !(Object.values(kdrBoard).includes(jsonStats2[key]["name"]))) {
-                                kdrBoard[index] = jsonStats2[key]["name"];
+                            if (currStats[key]["snipe count"] / denom == value && !(Object.values(kdrBoard).includes(currStats[key]["name"]))) {
+                                kdrBoard[index] = currStats[key]["name"];
                             }
                         }
                     });
-                    snipeOrder = Object.values(snipeBoard);
-                    deathOrder = Object.values(deathBoard);
-                    overallOrder = Object.values(overallBoard);
-                    kdrOrder = Object.values(kdrBoard);
+                    let snipeOrder = Object.values(snipeBoard);
+                    let deathOrder = Object.values(deathBoard);
+                    let overallOrder = Object.values(overallBoard);
+                    let kdrOrder = Object.values(kdrBoard);
                     for (let i = 0; i < keys.length; i++) {
                         snipeBoardData.push({ name: snipeOrder[i], points: snipeCounts[i] });
                     }
@@ -417,72 +496,111 @@ client.on('messageCreate', async (message) => {
 })
 
 client.on('messageReactionAdd', async (reaction, user) => {
-    // Ensure it's cached
     if (reaction.partial) {
-        try {
-            await reaction.fetch();
-        } catch (error) {
-            console.error('❌ Error fetching reaction:', error);
-            return;
-        }
+        try { await reaction.fetch(); }
+        catch (error) { console.error('❌ Error fetching reaction:', error); return; }
     }
 
-    // checking if the message reacted to is correct
-    if (!(reaction.message.author.bot && reaction.message.content.includes("just sniped")))
-        return;
+    if (!(reaction.message.author.bot && reaction.message.content.includes("just sniped"))) return;
 
     const guild = reaction.message.guild;
-
-    // Fetch the member from the guild
     const member = await guild.members.fetch(user.id);
 
-    // checking if user has the high snipress role and used correct reaction
-    if (!(reaction.emoji.name === '🏴') || !(member.roles.cache.has(snipermodRoleID))) {
+    if (!(reaction.emoji.name === '🏴' && member.roles.cache.has(snipermodRoleID))) {
         reaction.users.remove(user.id);
         return;
     }
 
-    // getting people mentioned as well as sender of message
+    if (!reaction.message.reference) return;
     const repliedMessage = await reaction.message.channel.messages.fetch(reaction.message.reference.messageId);
-    const sender = repliedMessage.author;
+    const senderId = repliedMessage.author.id;
     const mentioned = repliedMessage.mentions.members;
-    const mentioned_members = [];
-    mentioned.forEach(member => {
-        mentioned_members.push(member.displayName);
-        if (!member.roles.cache.has(sniperRoleID)) {
-            repliedMessage.reply("Invalid snipe, no sniping non-snipers!");
-            validSnipe = false;
+    const victimIds = mentioned.map(m => m.id);
+    const victimCount = victimIds.length;
+
+    const markedTransferMatch = repliedMessage.content.match(/sniped marked <@(\d+)> for (\d+) accumulation points/);
+    const isMarkedTransfer = markedTransferMatch !== null;
+
+    const senderRef = db.collection("users").doc(senderId);
+    const senderDoc = await senderRef.get();
+    if (!senderDoc.exists) return;
+    const senderStats = senderDoc.data();
+
+    let totalPenalty = 0;
+    const updates = {};
+
+    if (!senderStats.isMarked) {
+        // 1) Regular illegal snipe (sender not marked)
+        totalPenalty = 1 + victimCount * 2;
+
+        updates["snipe count"] = admin.firestore.FieldValue.increment(-victimCount);
+        updates["overall points"] = admin.firestore.FieldValue.increment(-totalPenalty);
+        updates["accumulation"] = 0; // just in case
+
+        for (const victimId of victimIds) {
+            const victimRef = db.collection("users").doc(victimId);
+            await victimRef.update({
+                "death count": admin.firestore.FieldValue.increment(-1),
+                "overall points": admin.firestore.FieldValue.increment(1)
+            });
         }
-    });
+    } else if (senderStats.isMarked && !isMarkedTransfer) {
+        // 2) Regular marked illegal snipe
+        // Only subtract the accumulation gained from this snipe (1 per victim)
+        const accumulationPenalty = victimCount;
 
-    // fixing stats
-    let isBountySnipe = false;
-    const bountyId = getCurrentBountyId(jsonStats2);
+        totalPenalty = 1 + victimCount * 3 + accumulationPenalty;
 
-    mentioned.forEach(member => {
-        if (bountyId) {
-            if (member.id == bountyId && jsonStats2[bountyId]["isBounty"].killerId == sender.id && !jsonStats2[bountyId]["isBounty"].alive) {
-                isBountySnipe = true;
-                jsonStats2[bountyId]["isBounty"].alive = true;
-                delete jsonStats2[bountyId]["isBounty"].killerId
-                jsonStats2[sender.id]["overall points"] -= 8;
-                jsonStats2[sender.id]["bounty snipe count"] -= 1;
-            }
+        updates["snipe count"] = admin.firestore.FieldValue.increment(-victimCount);
+        updates["overall points"] = admin.firestore.FieldValue.increment(-totalPenalty);
+        updates["marked snipe count"] = admin.firestore.FieldValue.increment(-1);
+        updates["accumulation"] = admin.firestore.FieldValue.increment(-accumulationPenalty);
+
+        for (const victimId of victimIds) {
+            const victimRef = db.collection("users").doc(victimId);
+            await victimRef.update({
+                "death count": admin.firestore.FieldValue.increment(-1),
+                "overall points": admin.firestore.FieldValue.increment(1)
+            });
         }
-        jsonStats2[member.id]["death count"] -= 1;
-        jsonStats2[member.id]["emojis"] += "😇";
-        jsonStats2[member.id]["overall points"] += 1;
-    });
-    jsonStats2[sender.id]["snipe count"] -= mentioned_members.length;
-    jsonStats2[sender.id]["emojis"] += "🏴".repeat(mentioned_members.length);
-    jsonStats2[sender.id]["overall points"] -= (mentioned_members.length * 2) + 1;
-    const updatedJsonStats = JSON.stringify(jsonStats2, null, 2);
-    fs.writeFileSync(filePath2, updatedJsonStats, 'utf8');
+    } else if (isMarkedTransfer) {
+        // 3) Marked transfer illegal snipe
+        const prevMarkedId = markedTransferMatch[1];
+        const restoredAccumulation = parseInt(markedTransferMatch[2]);
 
-    // replying with illegal notification
+        if (!senderStats.isMarked) return;
+
+        totalPenalty = 1 + victimCount * 2 + restoredAccumulation;
+
+        updates["snipe count"] = admin.firestore.FieldValue.increment(-victimCount);
+        updates["overall points"] = admin.firestore.FieldValue.increment(-totalPenalty);
+        updates["marked snipe count"] = admin.firestore.FieldValue.increment(-1);
+        updates["marked count"] = admin.firestore.FieldValue.increment(-1);
+        updates["accumulation"] = 0;
+        updates["isMarked"] = false;
+
+        const prevMarkedRef = db.collection("users").doc(prevMarkedId);
+        await prevMarkedRef.update({
+            "isMarked": true,
+            "accumulation": restoredAccumulation,
+            "marked count": admin.firestore.FieldValue.increment(1)
+        });
+
+        for (const victimId of victimIds) {
+            const victimRef = db.collection("users").doc(victimId);
+            await victimRef.update({
+                "death count": admin.firestore.FieldValue.increment(-1),
+                "overall points": admin.firestore.FieldValue.increment(1)
+            });
+        }
+    }
+
+    await senderRef.update(updates);
+
     repliedMessage.reply("🚩 Snipe flagged as illegal! All decisions are final! 🚩");
     reaction.message.delete();
 });
+
 
 client.login(TOKEN);
 
