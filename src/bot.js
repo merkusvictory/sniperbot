@@ -362,10 +362,7 @@ client.on('messageCreate', async (message) => {
                         markedSnipeCount = 0;
                         denom3 = 1;
                     }
-                    message.reply(`## **Player Stats - ${mentioned_members[0].displayName}**\n\n
-                        **Season 1**\t **${snipeCount}** snipes and **${deathCount}** deaths, **KDR (${snipeCount / denom})**\n
-                        **Season 2**\t **${overallPoints}** overall points, **${snipeCount2}** snipes, and **${deathCount2}** deaths, **KDR (${snipeCount2 / denom2})**\n\t\t\t\t\t\t**${bountySnipeCount}** bounty snipes, **${bountySurvivalCount}** bounty survivals\n
-                        **Season 3**\t **${overallPoints3}** overall points, **${snipeCount3}** snipes, and **${deathCount3}** deaths, **KDR (${snipeCount3 / denom3})**\n\t\t\t\t\t\t**${markedCount}** times as marked, **${markedSnipeCount}** snipes as marked`
+                    message.reply(`## **Player Stats - ${mentioned_members[0].displayName}**\n\n**Season 1**\t **${snipeCount}** snipes and **${deathCount}** deaths, **KDR (${snipeCount / denom})**\n**Season 2**\t **${overallPoints}** overall points, **${snipeCount2}** snipes, and **${deathCount2}** deaths, **KDR (${snipeCount2 / denom2})**\n\t\t\t\t\t\t**${bountySnipeCount}** bounty snipes, **${bountySurvivalCount}** bounty survivals\n**Season 3**\t **${overallPoints3}** overall points, **${snipeCount3}** snipes, and **${deathCount3}** deaths, **KDR (${snipeCount3 / denom3})**\n\t\t\t\t\t\t**${markedCount}** times as marked, **${markedSnipeCount}** snipes as marked`
                     );
                 }
 
