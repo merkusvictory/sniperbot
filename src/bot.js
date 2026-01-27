@@ -147,7 +147,7 @@ client.on('messageCreate', async (message) => {
                         { merge: true });
                 }
 
-                for (const member of mentioned) {
+                for (const member of mentioned.values()) {
                     const mentionedRef = db.collection("users").doc(member.id);
 
                     const mentionedDoc = await mentionedRef.get();
