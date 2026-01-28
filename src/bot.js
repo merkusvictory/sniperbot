@@ -188,7 +188,7 @@ client.on('messageCreate', async (message) => {
             let reply_message = `🔫 **${message.member.displayName}** just sniped${mentioned_members_output}! 🔫`;
             // sending marked transfer message
             if (senderData.isMarked) {
-                reply_message += `\n🩸 Accumulation raised to **${senderData["accumulation"] + 1}**! 🩸`;
+                reply_message += `\n🩸 Accumulation raised to **${senderData["accumulation"]}**! 🩸`;
             }
             if (isMarkedTransfer) {
                 reply_message += `\n🩸 **${message.member.displayName}** sniped marked **<@${stolenMark}>** for ${stolenMarkPoints} accumulation points! 🩸`;
