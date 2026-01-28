@@ -49,6 +49,10 @@ client.on("messageCreate", async (message) => {
 
 const cron = require('node-cron');
 
+client.on('ready', () => {
+  console.log(`LOGGED IN AS ${client.user.tag}`);
+});
+
 // get marked function
 
 function getCurrentMarkedList(jsonStats) {
