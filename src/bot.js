@@ -550,7 +550,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
         // Only subtract the accumulation gained from this snipe (1 per victim)
         const accumulationPenalty = victimCount;
 
-        totalPenalty = 1 + victimCount * 3 + accumulationPenalty;
+        totalPenalty = 1 + victimCount * 3;
 
         updates["snipe count"] = admin.firestore.FieldValue.increment(-victimCount);
         updates["overall points"] = admin.firestore.FieldValue.increment(-totalPenalty);
