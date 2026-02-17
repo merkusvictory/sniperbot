@@ -312,7 +312,7 @@ client.on('messageCreate', async (message) => {
                     );
                 }
                 // display other stats
-                else if (command.includes("stats") && mentioned.size == 1 && mentioned_members[0].roles.cache.has(sniperRoleID)) {
+                else if (command.includes("stats") && mentioned.size == 1) { // && mentioned_members[0].roles.cache.has(sniperRoleID)
                     const memberid = mentioned_members[0].user.id;
                     const userRef = db.collection("users").doc(memberid);
                     const doc = await userRef.get();
