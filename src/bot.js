@@ -49,7 +49,7 @@ client.on("messageCreate", async (message) => {
 
 const cron = require('node-cron');
 
-client.on('ready', () => {
+client.on('clientReady', () => {
   console.log(`LOGGED IN AS ${client.user.tag}`);
 });
 
