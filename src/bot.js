@@ -7,7 +7,7 @@ const snipermodRoleID = '1349181053973041185';
 const snipedChannelID = '1307188865404112980';
 
 // loading stats and token data from json files
-const filePath = 'src/stats.json'
+const filePath = 'src/stats1.json'
 const filePath2 = 'src/stats2.json'
 const statsFile = fs.readFileSync(filePath, 'utf8');
 const stats2File = fs.readFileSync(filePath2, 'utf8')
